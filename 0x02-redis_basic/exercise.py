@@ -34,6 +34,8 @@ class Cache:
         Takes in key, fn which is used to convert data back to desired format
         """
         val = self._redis.get(key)
+        if not val:
+            return None
         if fn == int:
             print(f"get int called")
             val = self.get_int(val)
