@@ -8,8 +8,6 @@ from typing import Any, Callable, Union
 import uuid
 
 
-
-
 class Cache:
     """
     class describing the cache class and writing strings to Redis
@@ -20,8 +18,7 @@ class Cache:
         """
         self._redis = redis.Redis()
         self._redis.flushdb()
-    
-    @count_calls
+
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Takes in a data, generates an uuid to be used as a key
@@ -33,7 +30,10 @@ class Cache:
         self._redis.set(key, data)
         return key
 
-    def get(self, key: str, fn: Callable[[Any], Union[str, int, None]] = None) -> Union[str, int, None]:
+    def get(self, key: str,
+            fn: Callable[[Any],
+                         Union[str, int, None]]
+            = None) -> Union[str, int, None]:
         """
         Takes in key, fn which is used to convert data back to desired format
         """
@@ -41,14 +41,11 @@ class Cache:
         if not val:
             return None
         if fn == int:
-            print(f"get int called")
             val = self.get_int(val)
         elif fn == str:
-            print("get str supposed to be called")
             val = self.get_str(val)
         elif fn:
-            print(f"lamda called")
-            val = fn(val)            
+            val = fn(val)
         return val
 
     def get_str(val: bytes) -> str:
@@ -62,5 +59,3 @@ class Cache:
         converts byte string representation to an int and returns it
         """
         return int(val)
-
-    
