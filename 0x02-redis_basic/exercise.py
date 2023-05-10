@@ -3,7 +3,7 @@
 Creating a cache class that writes string data type to Redis
 """
 import redis
-from typing import Union
+from typing import Union, Callable
 import uuid
 
 
@@ -28,3 +28,29 @@ class Cache:
         key = str(key)
         self._redis.set(key, data)
         return key
+
+    def get(self, key: str, fn: Callable[[], Union[str, int, None]]) -> Union[str, int, None]:
+        """
+        Takes in key, fn which is used to convert data back to desired format
+        """
+        val = self._redis.get(key)
+        if fn == int:
+            val = self.get_int(val)
+        elif fn == str:
+            val = self.get_str(val)
+        elif fn:
+            val = fn(val)            
+        return val
+
+    def get_str(val: bytes) -> str:
+        """
+        converts byte string representation to a str and returns it
+        """
+        decoded = val.decode("utf-8")
+        return decoded
+
+    def get_int(self, val: bytes) -> int:
+        """
+        converts byte string representation to an int and returns it
+        """
+        return int(val)
