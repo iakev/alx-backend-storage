@@ -8,6 +8,26 @@ from typing import Any, Callable, Union
 import uuid
 
 
+def count_calls(func: Callable[[], Any]) -> Callable:
+    """
+    Creates a wrapper_function function that increments count and returns
+    the function
+    """
+    @functools.wraps(func)
+    def wrapper_decorator(*args, **kwargs):
+        """
+        Function that increments count for key
+        (func.__qualname__) every time the method is called
+        """
+        # self being the first argumen translates to args[0]
+        key = func.__qualname__
+        red = args[0]
+        red._redis.incr(key, amount=1)
+        value = func(*args, **kwargs)
+        return value
+    return wrapper_decorator
+
+
 class Cache:
     """
     class describing the cache class and writing strings to Redis
@@ -19,6 +39,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Takes in a data, generates an uuid to be used as a key
