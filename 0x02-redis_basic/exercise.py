@@ -2,9 +2,12 @@
 """
 Creating a cache class that writes string data type to Redis
 """
+import functools
 import redis
 from typing import Any, Callable, Union
 import uuid
+
+
 
 
 class Cache:
@@ -17,7 +20,8 @@ class Cache:
         """
         self._redis = redis.Redis()
         self._redis.flushdb()
-
+    
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Takes in a data, generates an uuid to be used as a key
@@ -29,7 +33,7 @@ class Cache:
         self._redis.set(key, data)
         return key
 
-    def get(self, key: str, fn: Callable[[Any], Union[str, int, None]]) -> Union[str, int, None]:
+    def get(self, key: str, fn: Callable[[Any], Union[str, int, None]] = None) -> Union[str, int, None]:
         """
         Takes in key, fn which is used to convert data back to desired format
         """
@@ -58,3 +62,5 @@ class Cache:
         converts byte string representation to an int and returns it
         """
         return int(val)
+
+    
