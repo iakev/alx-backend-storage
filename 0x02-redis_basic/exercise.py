@@ -27,6 +27,26 @@ def count_calls(method: Callable[[], Any]) -> Callable:
     return wrapper_decorator
 
 
+def call_history(method: Callable[[], Any]) -> Callable:
+    """
+    stores history of inputs and outputs for a method
+    """
+    @functools.wraps(method)
+    def wrapper_decorator(*args, **kwargs):
+        """
+        Creates inputs and outputs lists
+        """
+        inputs = str(method.__qualname__) + ":inputs"
+        outputs = str(method.__qualname__) + ":outputs"
+        red = args[0]
+        for i in range(1, len(args)):
+            red._redis.rpush(inputs, str(args[i]))
+        value = method(*args, **kwargs)
+        red._redis.rpush(outputs, value)
+        return value
+    return wrapper_decorator
+
+
 class Cache:
     """
     class describing the cache class and writing strings to Redis
@@ -38,6 +58,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @call_history
     @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
