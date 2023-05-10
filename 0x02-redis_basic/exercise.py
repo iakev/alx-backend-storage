@@ -8,22 +8,21 @@ from typing import Any, Callable, Union
 import uuid
 
 
-def count_calls(func: Callable[[], Any]) -> Callable:
+def count_calls(method: Callable[[], Any]) -> Callable:
     """
     Creates a wrapper_function function that increments count and returns
     the function
     """
-    @functools.wraps(func)
+    @functools.wraps(method)
     def wrapper_decorator(*args, **kwargs):
         """
         Function that increments count for key
         (func.__qualname__) every time the method is called
         """
-        # self being the first argumen translates to args[0]
-        key = func.__qualname__
+        key = method.__qualname__
         red = args[0]
         red._redis.incr(key, amount=1)
-        value = func(*args, **kwargs)
+        value = method(*args, **kwargs)
         return value
     return wrapper_decorator
 
