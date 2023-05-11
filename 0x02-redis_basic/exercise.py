@@ -27,7 +27,7 @@ def count_calls(method: Callable) -> Callable:
     return wrapper_decorator
 
 
-def call_history(method: Callable[[], Any]) -> Callable:
+def call_history(method: Callable) -> Callable:
     """
     stores history of inputs and outputs for a method
     """
@@ -38,11 +38,11 @@ def call_history(method: Callable[[], Any]) -> Callable:
         """
         inputs = method.__qualname__ + ":inputs"
         outputs = method.__qualname__ + ":outputs"
-        red = args[0]
+        self = args[0]
         for i in range(1, len(args)):
-            red._redis.rpush(inputs, str(args[i]))
+            self._redis.rpush(inputs, args[i])
         value = method(*args, **kwargs)
-        red._redis.rpush(outputs, value)
+        self._redis.rpush(outputs, value)
         return value
     return wrapper_decorator
 
