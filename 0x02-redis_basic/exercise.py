@@ -39,8 +39,8 @@ def call_history(method: Callable) -> Callable:
         inputs = method.__qualname__ + ":inputs"
         outputs = method.__qualname__ + ":outputs"
         self = args[0]
-        for i in range(1, len(args)):
-            self._redis.rpush(inputs, args[i])
+        new_args = str(args[1:])
+        self._redis.rpush(inputs, new_args)
         value = method(*args, **kwargs)
         self._redis.rpush(outputs, value)
         return value
