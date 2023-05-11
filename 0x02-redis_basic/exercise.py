@@ -101,10 +101,22 @@ class Cache:
         """
         return int(val)
 
-def replay(method: Callable[[Cache] ,None]) -> None:
+def replay(cache:Cache, method: Callable) -> None:
     """
     Display history of calls of a particular function
     """
     count_key = method.__qualname__
-    instance = method.split('.')[0]
-    print(f"")
+    inputs_key = method.__qualname__ + ":inputs"
+    outputs_key = method.__qualname__ + ":outputs"
+
+    count = cache._redis.get(count_key)
+    if count is None:
+        count = 0
+    else:
+        count = int(count)
+    print(count)
+    print (f"{count_key} was called {count} times:")
+    for inputs, outputs in zip(cache._redis.lrange(inputs_key, 0, -1), cache._redis.lrange(outputs_key, 0, -1)):
+        inputs = inputs.decode('utf-8')
+        outputs = outputs.decode('utf-8')
+        print(f"{count_key}(*{inputs}) -> {outputs}")
