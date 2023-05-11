@@ -8,7 +8,7 @@ from typing import Any, Callable, Union
 import uuid
 
 
-def count_calls(method: Callable[[], Any]) -> Callable:
+def count_calls(method: Callable) -> Callable:
     """
     Creates a wrapper_function function that increments count and returns
     the function
@@ -20,8 +20,8 @@ def count_calls(method: Callable[[], Any]) -> Callable:
         (func.__qualname__) every time the method is called
         """
         key = method.__qualname__
-        red = args[0]
-        red._redis.incr(key, amount=1)
+        self = args[0]
+        self._redis.incr(key, amount=1)
         value = method(*args, **kwargs)
         return value
     return wrapper_decorator
@@ -36,8 +36,8 @@ def call_history(method: Callable[[], Any]) -> Callable:
         """
         Creates inputs and outputs lists
         """
-        inputs = str(method.__qualname__) + ":inputs"
-        outputs = str(method.__qualname__) + ":outputs"
+        inputs = method.__qualname__ + ":inputs"
+        outputs = method.__qualname__ + ":outputs"
         red = args[0]
         for i in range(1, len(args)):
             red._redis.rpush(inputs, str(args[i]))
@@ -100,3 +100,11 @@ class Cache:
         converts byte string representation to an int and returns it
         """
         return int(val)
+
+def replay(method: Callable[[Cache] ,None]) -> None:
+    """
+    Display history of calls of a particular function
+    """
+    count_key = method.__qualname__
+    instance = method.split('.')[0]
+    print(f"")
