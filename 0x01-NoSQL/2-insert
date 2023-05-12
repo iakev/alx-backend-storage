@@ -1,5 +1,7 @@
 // Inserts a document in specified collection school
 
-db.school.insertOne({
-	name: "Holberton school",
-})
+try {
+    db.school.insertOne({name: "Holberton school"});
+} catch(e) {
+  print (e);
+};
