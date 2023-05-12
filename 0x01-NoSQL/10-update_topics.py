@@ -8,5 +8,6 @@ def update_topics(mongo_collection, name, topics):
     """
     Changes all topics of a school document based on the name
     """
-    mongo_collection.find_one_and_update(
-        {'name': name}, {'$set': {'topics': topics}}, upsert=True)
+    if topics:
+        mongo_collection.find_one_and_update(
+            {'name': name}, {'$set': {'topics': topics}})
