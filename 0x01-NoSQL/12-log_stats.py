@@ -24,8 +24,10 @@ if __name__ == "__main__":
     get_status_docs = nginx_collection.count_documents({"method": "GET",
                                                         "path": "/status"})
     print("\tmethod GET: {}".format(get_docs).expandtabs(4))
-    print("\tmethod POST: {}".format(put_docs).expandtabs(4))
+    print("\tmethod POST: {}".format(post_docs).expandtabs(4))
     print("\tmethod PUT: {}".format(put_docs).expandtabs(4))
     print("\tmethod PATCH: {}".format(patch_docs).expandtabs(4))
     print("\tmethod DELETE: {}".format(delete_docs).expandtabs(4))
     print("{} status check".format(get_status_docs))
+    # for log in all_logs:
+    #     print(f"{log}")
