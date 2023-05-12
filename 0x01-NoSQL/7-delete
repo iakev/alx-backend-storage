@@ -1,0 +1,6 @@
+// Deletes all documents matching query "name = Holberton schol" in the school collection
+try {
+    db.school.deleteMany( {"name" : "Holberton school" } );
+} catch(e) {
+  print(e);
+}
